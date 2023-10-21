@@ -1,0 +1,15 @@
+# Carpeta de entorno virtual (Python venv)
+venv/
+
+# Otros archivos y carpetas generados durante el desarrollo
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.db
+*.sqlite3
+*.log
+
+# Archivos específicos de configuración
+config.json
