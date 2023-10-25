@@ -5,7 +5,6 @@ import numpy as np
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import cross_val_score
 from skimage.feature import graycomatrix, graycoprops, local_binary_pattern
 from sklearn.metrics import accuracy_score, classification_report
 
@@ -66,7 +65,17 @@ def extract_features(image_path):
         contrast_tamura = calculate_contrast(image)
         directionality = calculate_directionality(image)
 
-        return [contrast, dissimilarity, homogeneity, ASM, energy, coarseness, contrast_tamura, directionality]
+        # Calcular características LBP
+        radius = 1
+        n_points = 8 * radius
+        lbp_image = local_binary_pattern(image, n_points, radius, method='uniform')
+        lbp_histogram, _ = np.histogram(lbp_image, bins=np.arange(0, n_points + 3), range=(0, n_points + 2))
+
+        # Concatenar todas las características
+        all_features = [contrast, dissimilarity, homogeneity, ASM, energy, coarseness, contrast_tamura, directionality]
+        all_features += list(lbp_histogram)
+
+        return all_features
     except Exception as e:
         print(f"Error al procesar la imagen {image_path}: {str(e)}")
         return None
@@ -117,15 +126,10 @@ except Exception as e:
 
 # Entrenamiento del modelo
 try:
-    model = KNeighborsClassifier(n_neighbors=5)
+    model = KNeighborsClassifier(n_neighbors=3)
     model.fit(X_train, y_train)
 except Exception as e:
     print(f"Error al entrenar el modelo: {e}")
-
-# Realizar validación cruzada
-cv_scores = cross_val_score(model, X_train, y_train, cv=5)
-print("Cross-validation scores:", cv_scores)
-print("Mean cross-validation score:", np.mean(cv_scores))
 
 # Evaluación del modelo
 try:
@@ -138,15 +142,16 @@ try:
 except Exception as e:
     print(f"Error al evaluar el modelo: {e}")
 
-# Obtener la matriz de confusión
-conf_matrix = confusion_matrix(y_test, y_pred)
-print("Matriz de confusión:")
-print(conf_matrix)
+# Guardado del modelo
+try:
+    joblib.dump(model, 'emotion_model.pkl')
+except Exception as e:
+    print(f"Error al guardar el modelo: {e}")
 
-#-----------------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------ #
 
 # Ruta de la imagen a predecir
-new_image_path = 'datasets/image.jpeg'
+new_image_path = 'datasets/Sad.jpg'
 
 # Extraer características de la imagen
 new_image_features = extract_features(new_image_path)
@@ -163,34 +168,3 @@ try:
     print("Emoción predicha para la imagen:", predicted_emotion)
 except Exception as e:
     print(f"Error al predecir la emoción de la imagen: {e}")
-
-# Guardado del modelo
-try:
-    joblib.dump(model, 'emotion_model.pkl')
-except Exception as e:
-    print(f"Error al guardar el modelo: {e}")
-
-
-"""
-Cross-validation scores: [0.725  0.625  0.675  0.7125 0.6625]
-Mean cross-validation score: 0.68
-
-Precisión del modelo en el conjunto de prueba: 0.995
------------------------------------------------------
-              precision    recall  f1-score   support
-
-       angry       0.98      1.00      0.99        50
-       happy       1.00      0.98      0.99        50
-     neutral       1.00      1.00      1.00        50
-         sad       1.00      1.00      1.00        50
-
-    accuracy                           0.99       200
-   macro avg       1.00      0.99      0.99       200
-weighted avg       1.00      0.99      0.99       200
-
-Matriz de confusión:
-[[50  0  0  0]
- [ 1 49  0  0]
- [ 0  0 50  0]
- [ 0  0  0 50]]
-"""

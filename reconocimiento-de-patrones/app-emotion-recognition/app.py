@@ -1,43 +1,49 @@
-import os
-import requests
-import subprocess
+import cv2
+import joblib
+import numpy as np
+from model import scaler
+from model import extract_features
 from flask import Flask, request, render_template
-from werkzeug.datastructures import FileStorage
 
 app = Flask(__name__)
 
-# Ruta para la página de inicio
+# Cargar el modelo previamente entrenado
+model = joblib.load('emotion_model.pkl')
+
+# Función para predecir la emoción
+def predict_emotion(image_path):
+    try:
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        features = extract_features(image_path)
+        if features is not None:
+            features = np.array(features).reshape(1, -1)
+            features = scaler.transform(features) 
+            emotion = model.predict(features)[0]
+            return emotion
+        else:
+            return "No se pudo procesar la imagen correctamente"
+    except Exception as e:
+        return str(e)
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Ruta para el formulario de carga de imágenes
-@app.route('/upload', methods=['POST'])
-def upload_image():
-    uploaded_file = request.files.get('image')
+@app.route('/predict', methods=['POST'])
+def predict():
+    if 'image' not in request.files:
+        return "No se ha subido ninguna imagen."
 
-    if uploaded_file and isinstance(uploaded_file, FileStorage):
-        image_path = os.path.join('uploads', uploaded_file.filename)
-        uploaded_file.save(image_path)
+    image = request.files['image']
+    if image.filename == '':
+        return "No se ha seleccionado ninguna imagen."
 
-        # Enviar la imagen a la API
-        api_url = 'http://localhost:5000/predict'
-        files = {'image': open(image_path, 'rb')}
-        response = requests.post(api_url, files=files)
-        emotion_data = response.json()
+    image_path = 'temp_image.jpg'
+    image.save(image_path)
+    emotion = predict_emotion(image_path)
 
-        # Agrega una declaración de impresión para verificar la respuesta de la API
-        print("Respuesta de la API:", emotion_data)
-
-        emotion = emotion_data.get('emotion', 'Emoción no encontrada')
-        label = emotion_data.get('label', -1)
-
-        return render_template('result.html', emotion=emotion, label=label)
-    else:
-        # Manejar el caso en el que 'image' no se proporcionó o no es una instancia de 'FileStorage'
-        print("No se proporcionó un archivo de imagen válido")
-        return render_template('index.html')
+    return render_template('result.html', emotion=emotion)
 
 if __name__ == '__main__':
-    # Iniciar la aplicación web
-    app.run(debug=True, port=5001)
+    app.run(debug=True)
+
