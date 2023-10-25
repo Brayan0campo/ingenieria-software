@@ -65,15 +65,17 @@ def extract_features(image_path):
         contrast_tamura = calculate_contrast(image)
         directionality = calculate_directionality(image)
 
+        """
         # Calcular características LBP
         radius = 1
         n_points = 8 * radius
         lbp_image = local_binary_pattern(image, n_points, radius, method='uniform')
         lbp_histogram, _ = np.histogram(lbp_image, bins=np.arange(0, n_points + 3), range=(0, n_points + 2))
-
+        """
         # Concatenar todas las características
         all_features = [contrast, dissimilarity, homogeneity, ASM, energy, coarseness, contrast_tamura, directionality]
-        all_features += list(lbp_histogram)
+
+        """ all_features += list(lbp_histogram) """
 
         return all_features
     except Exception as e:
@@ -142,6 +144,17 @@ try:
 except Exception as e:
     print(f"Error al evaluar el modelo: {e}")
 
+# Matriz de confusión
+try:
+    cm = confusion_matrix(y_test, y_pred)
+    print("-----------------------------------------------------")
+    print(" ")
+    print("Matriz de confusión:")
+    print(cm)
+    print(" ")
+except Exception as e:
+    print(f"Error al crear la matriz de confusión: {e}")
+
 # Guardado del modelo
 try:
     joblib.dump(model, 'emotion_model.pkl')
@@ -168,3 +181,29 @@ try:
     print("Emoción predicha para la imagen:", predicted_emotion)
 except Exception as e:
     print(f"Error al predecir la emoción de la imagen: {e}")
+
+
+"""
+Precisión del modelo en el conjunto de prueba: 0.995
+-----------------------------------------------------
+              precision    recall  f1-score   support
+
+       angry       0.98      1.00      0.99        50
+       happy       1.00      0.98      0.99        50
+     neutral       1.00      1.00      1.00        50
+         sad       1.00      1.00      1.00        50
+
+    accuracy                           0.99       200
+   macro avg       1.00      0.99      0.99       200
+weighted avg       1.00      0.99      0.99       200
+
+-----------------------------------------------------
+
+Matriz de confusión:
+[[50  0  0  0]
+ [ 1 49  0  0]
+ [ 0  0 50  0]
+ [ 0  0  0 50]]
+
+Emoción predicha para la imagen: ['sad']
+"""
