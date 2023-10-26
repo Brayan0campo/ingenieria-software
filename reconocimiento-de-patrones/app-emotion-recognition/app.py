@@ -17,7 +17,7 @@ def predict_emotion(image_path):
         features = extract_features(image_path)
         if features is not None:
             features = np.array(features).reshape(1, -1)
-            features = scaler.transform(features) 
+            features = scaler.transform(features)
             emotion = model.predict(features)[0]
             return emotion
         else:
@@ -46,4 +46,3 @@ def predict():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

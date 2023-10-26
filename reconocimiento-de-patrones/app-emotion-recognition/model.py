@@ -19,18 +19,6 @@ def calculate_coarseness(image):
         print(f"Error en calculate_coarseness: {str(e)}")
         return None
 
-# Función para calcular contraste de Tamura
-def calculate_contrast(image):
-    try:
-        image = image.astype('int32')
-        m, n = image.shape
-        mean_intensity = np.mean(image)
-        contrast = np.sum(np.square(image - mean_intensity)) / (m * n)
-        return contrast
-    except Exception as e:
-        print(f"Error en calculate_contrast: {str(e)}")
-        return None
-
 # Función para calcular directionality de Tamura
 def calculate_directionality(image):
     try:
@@ -62,7 +50,6 @@ def extract_features(image_path):
 
         # Calcular características de Tamura
         coarseness = calculate_coarseness(image)
-        contrast_tamura = calculate_contrast(image)
         directionality = calculate_directionality(image)
 
         """
@@ -73,7 +60,7 @@ def extract_features(image_path):
         lbp_histogram, _ = np.histogram(lbp_image, bins=np.arange(0, n_points + 3), range=(0, n_points + 2))
         """
         # Concatenar todas las características
-        all_features = [contrast, dissimilarity, homogeneity, ASM, energy, coarseness, contrast_tamura, directionality]
+        all_features = [contrast, dissimilarity, homogeneity, ASM, energy, coarseness, directionality]
 
         """ all_features += list(lbp_histogram) """
 
@@ -181,7 +168,6 @@ try:
     print("Emoción predicha para la imagen:", predicted_emotion)
 except Exception as e:
     print(f"Error al predecir la emoción de la imagen: {e}")
-
 
 """
 Precisión del modelo en el conjunto de prueba: 0.995
