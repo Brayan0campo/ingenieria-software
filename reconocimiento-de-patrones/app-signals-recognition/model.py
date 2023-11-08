@@ -36,6 +36,10 @@ def extract_features(audio_data):
     zcr = len(zero_crossings)
     skewness = np.abs(np.mean((audio_data - np.mean(audio_data)) ** 3) / (np.std(audio_data) ** 3))
 
+    """
+    fft = np.fft.fft(Señal_New)
+    frecuencias = np.fft.fftfreq(len(fft))
+    """
     return [RMS, Times, Varianza, rms_amplitude, Desviacion, zcr, skewness]
 
 
@@ -53,6 +57,7 @@ for i in range(1, Total + 1):
 
                 Dataframe[i - 1, 0:Muestreo] = np.transpose(Señal_New)
                 Dataframe[i - 1, Muestreo] = Y[i - 1]
+                """ Dataframe[i - 1, Muestreo + 1] = max(frecuencias) """
 
                 X.append(caracteristicas)
             except Exception as e:

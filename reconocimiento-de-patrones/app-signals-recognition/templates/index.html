@@ -1,14 +1,66 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Predicción de Motor</title>
-</head>
-<body>
-    <h1>Predicción de Motor</h1>
-    <form method="POST" action="/predict" enctype="multipart/form-data">
-        <input type="file" name="audio" accept=".wav, .mp3">
-        <input type="submit" value="Predecir">
-    </form>
-    <p>Resultado: {{ resultado }}</p>
-</body>
+  <head>
+    <title>Predicción de Audio</title>
+  </head>
+  <body>
+    <section
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 12.5rem 25rem;
+        padding: 1.25rem;
+        border-radius: 0.3125rem;
+        border: 0.0625rem solid rgb(74, 74, 74);
+      "
+    >
+      <h1
+        style="
+          color: rgb(48, 48, 48);
+          font: bold 1.4em sans-serif;
+          text-transform: uppercase;
+          margin-bottom: 2.5rem;
+        "
+      >
+        Predicción de Audio
+      </h1>
+      <form
+        method="POST"
+        action="/predict"
+        enctype="multipart/form-data"
+        style="display: flex; flex-direction: column"
+      >
+        <p style="color: rgb(48, 48, 48); font: bold 1em sans-serif">
+          Seleccione un archivo de audio:
+        </p>
+        <input
+          style="margin-bottom: 3rem"
+          type="file"
+          name="audio"
+          accept=".wav, .mp3"
+          required
+        />
+        <input
+          style="
+            margin-bottom: 2.5rem;
+            font: bold 0.9em sans-serif;
+            color: rgb(48, 48, 48);
+            text-transform: uppercase;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 7px;
+            border: none;
+            background-color: rgba(24, 78, 216, 0.846);
+            color: rgb(255, 255, 255);
+          "
+          type="submit"
+          value="Predecir"
+        />
+      </form>
+      <p style="color: rgb(48, 48, 48); font: bold 1em sans-serif">
+        Resultado: {{ resultado }}
+      </p>
+    </section>
+  </body>
 </html>
