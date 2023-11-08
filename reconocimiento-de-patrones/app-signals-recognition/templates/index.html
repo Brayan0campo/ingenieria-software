@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Predicción de Motor</title>
+</head>
+<body>
+    <h1>Predicción de Motor</h1>
+    <form method="POST" action="/predict" enctype="multipart/form-data">
+        <input type="file" name="audio" accept=".wav, .mp3">
+        <input type="submit" value="Predecir">
+    </form>
+    <p>Resultado: {{ resultado }}</p>
+</body>
+</html>

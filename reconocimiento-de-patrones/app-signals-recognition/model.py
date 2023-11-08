@@ -22,45 +22,45 @@ except Exception as e:
     print(f"Error al cargar etiquetas: {e}")
     exit()
 
+# Función para extraer características
+def extract_features(audio_data):
+    Magnitud, _ = librosa.magphase(librosa.stft(audio_data))
+    RMS_vector = librosa.feature.rms(S=Magnitud)
+    RMS = RMS_vector.mean()
+    Times_vector = librosa.times_like(RMS_vector)
+    Times = Times_vector.mean()
+    Varianza = np.var(audio_data)
+    rms_amplitude = np.sqrt(np.mean(np.square(audio_data)))
+    Desviacion = np.std(audio_data)
+    zero_crossings = np.where(np.diff(np.sign(audio_data)))[0]
+    zcr = len(zero_crossings)
+    skewness = np.abs(np.mean((audio_data - np.mean(audio_data)) ** 3) / (np.std(audio_data) ** 3))
+
+    return [RMS, Times, Varianza, rms_amplitude, Desviacion, zcr, skewness]
+
+
 # Extraer características
 X = []
 for i in range(1, Total + 1):
-    for ext in ['mp3', 'aac']:
+    for ext in ['mp3']:
         Ruta_audios = os.path.join(Ruta, str(i) + '.' + ext)
         if os.path.exists(Ruta_audios):
             try:
                 Señal, sr = librosa.load(Ruta_audios)
                 Señal_New = np.resize(Señal, Muestreo)
 
-                Magnitud, _ = librosa.magphase(librosa.stft(Señal))
-                RMS_vector = librosa.feature.rms(S=Magnitud)
-                RMS = RMS_vector.mean()
-                Times_vector = librosa.times_like(RMS_vector)
-                Times = Times_vector.mean()
-                Varianza = np.var(Señal)
-                rms_amplitude = np.sqrt(np.mean(np.square(Señal)))
-                Desviacion = np.std(Señal)
-                zero_crossings = np.where(np.diff(np.sign(Señal)))[0]
-                zcr = len(zero_crossings)
-                skewness = np.abs(
-                    np.mean((Señal - np.mean(Señal)) ** 3) / (np.std(Señal) ** 3))
+                caracteristicas = extract_features(Señal)
 
-                """
-                fft = np.fft.fft(Señal_New)
-                frecuencias = np.fft.fftfreq(len(fft))
-                """
-                caracteristicas = [RMS, Times, Varianza,
-                                   rms_amplitude, Desviacion, zcr, skewness]
                 Dataframe[i - 1, 0:Muestreo] = np.transpose(Señal_New)
                 Dataframe[i - 1, Muestreo] = Y[i - 1]
-                """ Dataframe[i - 1, Muestreo + 1] = max(frecuencias) """
+
                 X.append(caracteristicas)
-                break
             except Exception as e:
                 print(f"Error en la extracción de características: {e}")
                 continue
         else:
             print(f"El archivo de audio {Ruta_audios} no existe.")
+
 
 # Normalizar características
 try:
@@ -127,6 +127,7 @@ except Exception as e:
 
 # ---------------------------------------------------------------------------------------------- #
 
+"""
 # Carga la nueva señal de audio
 nueva_senal, sr = librosa.load("dataset/96.mp3")
 
@@ -155,8 +156,11 @@ prediccion = model.predict(caracteristicas_nueva_senal_normalizadas)
 # Muestra la etiqueta predicha
 print(" ")
 print("Etiqueta predicha para la nueva señal:", prediccion)
+"""
 
-""""
+# ---------------------------------------------------------------------------------------------- #
+
+"""
 Precisión del modelo KNN: 1.0
 -----------------------------------------------------
 
