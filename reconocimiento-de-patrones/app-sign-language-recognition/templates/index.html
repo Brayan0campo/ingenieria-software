@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lengua de Señas</title>
+  </head>
+  <body>
+    <h1
+      style="
+        color: rgb(48, 48, 48);
+        font: bold 1.3em sans-serif;
+        text-transform: uppercase;
+        margin: 2.5rem;
+        text-align: center;
+      "
+    >
+      Reconocimiento de Lengua de Señas 👋
+    </h1>
+    <div style="display: flex; flex-direction: row">
+      <img
+        style="
+          margin: 2.5rem;
+          border-radius: 0.3125rem;
+          border: 0.1875rem solid rgb(74, 74, 74);
+        "
+        src="{{ url_for('video_feed') }}"
+        width="640"
+        height="400"
+      />
+      <img
+        style="
+          margin: 2.5rem 0;
+          border-radius: 0.3125rem;
+          border: 0.1875rem solid rgb(74, 74, 74);
+        "
+        src="static/signs.png"
+        alt="signs"
+        width="550"
+        height="400"
+      />
+    </div>
+  </body>
+</html>
