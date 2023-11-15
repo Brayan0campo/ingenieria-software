@@ -26,7 +26,7 @@ labels = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I'
 # Iniciar video
 cap = cv2.VideoCapture(0)
 
-# Función para generar video y prediccion
+# Función para generar video y prediccio
 def generate_frames():
     while True:
         data_aux = []
